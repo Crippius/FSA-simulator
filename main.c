@@ -5,8 +5,9 @@ FSA create_fsa(void)
 {
     FSA fsa;
     FILE *fp;
+    char c, stiz;
     char tmp = 'a';
-    int i;
+    int i, pos, z;
     int alarm = 0;
     
     fp = fopen("file", "a"); //I used the mode append, but I think it's useful to create a new file for every single different AFS
@@ -16,12 +17,49 @@ FSA create_fsa(void)
     }
     printf("Inserisci gli stati dell'automa: (\invio per terminare");
     while(tmp != '\n'){
-        do{
             scanf("%c", &tmp);
-            fseek(fp, 0, SEEk_SET); //rewind(fp);
-            while ((!feof(fp))&&(alarm==0)){
-                
-        }while(
+            pos = ftell(fp);
+            fseek(fp, 0, SEEk_SET); //rewind(fp); //obviously this should change everytime we change the set
+            while ((!feof(fp))&&(alarm==1)){
+                c = fgetc(fp);
+                if (c==tmp){
+                    printf("\nHai già inserito questo stato!");
+                    alarm = 1;
+                }
+            } 
+        fseek(fp, pos, SEEK_SET);
+        fputc(tmp, fp);
+    }
+    alarm = 0;
+    printf("\nIndica lo stato iniziale: ");
+    do{
+        scanf("%c", &stiz);
+        fseek(fp, 0, SEEk_SET);
+        while((!feof(fp))&&(alarm==1)){
+            c = fgetc(fp);
+            if(c==stiz){
+                alarm = 1;
+            }
+        if(alarm == 0)
+            printf("\nStato non valido!");
+    }while(alarm == 0);
+    printf("\nStato registrato con successo!");
+    alarm = 0;
+    tmp = 'a';
+    z = pos;
+    printf("Inserisci le lettere dell'alfabeto: (\invio per terminare);
+    while(tmp != '\n'){
+        scanf("%c", &tmp);
+            pos = ftell(fp); 
+            fseek(fp, z, SEEK_SET)
+            while ((!feof(fp))&&(alarm==1)){
+                c = fgetc(fp);
+                if (c==tmp){
+                    printf("\nHai già inserito questa lettera!");
+                    alarm = 1;
+                }
+            } 
+        fseek(fp, pos, SEEK_SET);
         fputc(tmp, fp);
     }
     /* Initialise FSA */
