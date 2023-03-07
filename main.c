@@ -1,22 +1,18 @@
 
 #include "header.h"
 
-FSA create_fsa(void)
-{
-    FSA fsa;
-    /* Initialise FSA */
-    return fsa;
-}
-
 void compute_fsa(FSA fsa)
 {
     /* Calculating... */
 }
 
+// gcc *.c
+
 int main()
 {
     int decision; 
     FSA my_fsa;
+
     while (1)
     {
         printf("Cosa vuoi fare?\n1 - Creare FSA\n2 - Utilizzare FSA\n3 - Uscire plz\n");
