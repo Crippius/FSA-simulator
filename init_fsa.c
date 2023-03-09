@@ -41,13 +41,66 @@ alphabet get_I(void)
     return I;
 } 
 
-moves get_delta(void)
-{
-    moves tmp = NULL;
+int get_delta(struct el**L)  //la lista deve nascere qui, cioè dopo che hai preso stati e alfabeto ora qui crei una lista dinamica con tutte
+{                            //le configurazioni che lui ti mette 
+   struct el*last=NULL;
+   struct el*element;
+   int dec;
+   int count = 0;
+   int alarm;
+   char tmp[200];
+   char c;
 
-    // sike
-    return tmp;
+   if(*L != NULL){
+    return 0;
+   }
+   printf("\nOra inserisci le triple STATO_INIZIALE-INPUT-STATO_FINALE\n1-continuare\n0-terminare\n");
+   do
+   {
+    scanf("%d", &dec);
+   } while ((dec!=1)&&(dec!=0));
+
+   while (dec==1){
+    element = (struct el*)malloc(sizeof(struct el));
+    if(element==NULL){
+        printf("\nThe Heap Area is full");
+        return 0;
+    }
+    printf("\nInserire STATO %d: ",count);
+    gets(tmp); //qui bisognerebbe controllare che lo stato appartenga all'insieme degli stati messi prima
+    strcpy(element -> config.curr_q, tmp);
+    fflush(stdin);
+    printf("\nInserire INPUT: ");
+    scanf("%c", &c); //qui bisognerebbe controllare che l'input appartenga all'alfabeto messo prima
+    element ->config.i = c;
+    fflush(stdin);
+    printf("\nInserire STATO FINALE: ");
+    gets(tmp); //qui bisognerebbe controllare che lo stato appartenga all'insieme degli stati messi prima
+    strcpy(element->final_q, tmp);
+    element->next=NULL;
+    if (last==NULL){
+        *L=element;
+        last=element;
+    }
+    else {
+        last->next=element;
+        last = element;
+    }
+    count ++;
+    printf("\nPremere:\n1-CONTINUARE\n0-TERMINARE");
+    do
+    {
+        scanf("%d", &dec);
+    } while ((dec!=1)&&(dec!=0));
+    if (dec==0)
+        alarm = 1;
+   }
+   if(alarm==1)
+    return 1;
+   else
+    return 0;
 }
+
 
 state get_q0(void)
 {
@@ -111,17 +164,23 @@ translations get_eta(void)
 
 }
 
-FSA create_fsa(void)
+FSA create_fsa(struct el**L1)
 {
     FSA fsa;
-    
     fsa.Q = get_Q();
     fsa.I = get_I();
-    fsa.delta = get_delta(); 
+    fsa.delta = get_delta(L1);
+    if(fsa.delta==0)
+        printf("\nPROBLEMI, PROBLEMI");     
     fsa.q0 = get_q0();
     fsa.F = get_F();
     fsa.O = get_O();
     fsa.eta = get_eta();
 
     return fsa;
+}
+
+void compute_fsa(FSA fsa, struct el**L2){
+    /*Rodri passati pure LIST che è il puntatore alla testa della lista
+    così poi la puoi scandire col puntatore a LIST*/
 }

@@ -1,15 +1,11 @@
 
 #include "header.h"
-void compute_fsa(FSA fsa)
-{
-    /* Calculating... */
-}
 
 // gcc *.c
 
 int main()
 {
-    int decision; 
+    int decision;
     FSA my_fsa;
 
     while (1)
@@ -18,12 +14,15 @@ int main()
         do{
             scanf("%d", &decision);
         }while((decision != 1)&&(decision != 2)&&(decision != 3));
-            if (decision == 1)
-            my_fsa = create_fsa();
-            else if (decision == 2)
-                compute_fsa(my_fsa);
-            else if (decision == 3)
-                break;
+        struct el*LIST;
+        
+        if (decision == 1){
+            my_fsa = create_fsa(&LIST);
+        }
+        else if (decision == 2)
+            compute_fsa(my_fsa, &LIST);
+        else if (decision == 3)
+            break;
     }
     return (0);
 }

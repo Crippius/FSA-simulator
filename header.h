@@ -16,13 +16,13 @@ typedef struct
     str   z;
 } configuration;
 
-typedef struct
+/*typedef struct
 {
     configuration config;
     state  final_q;
 } move;
-
-typedef move* moves;
+*/
+// typedef move* moves;
 
 typedef struct
 {
@@ -32,11 +32,17 @@ typedef struct
 
 typedef translation* translations;
 
+struct el{
+    configuration config;
+    state  final_q;
+    struct el*next;
+};
+
 typedef struct 
 {
     state* Q;
     alphabet  I;
-    moves  delta;
+    int  delta;
     state  q0;
     state* F;
     alphabet  O;
@@ -45,13 +51,13 @@ typedef struct
 
 state*       get_Q(void);
 alphabet     get_I(void);
-moves        get_delta(void);
+int          get_delta(struct el**L);
 state        get_q0(void);
 state*       get_F(void);
 alphabet     get_O(void);
 translations get_eta(void);
 
-FSA create_fsa(void);
-void compute_fsa(FSA fsa);
+FSA create_fsa(struct el**L1);
+void compute_fsa(FSA fsa, struct el**L2);
 
 #endif
