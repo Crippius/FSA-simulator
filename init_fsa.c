@@ -194,7 +194,7 @@ void compute_fsa(FSA fsa, struct el**L2){
     attuale.curr_q = fsa.q0;
 
     //prendo la testa della lista di delta
-    header = fsa.delta;
+    header = *L2;
 
     accetto = 0;
 
