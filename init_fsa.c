@@ -181,6 +181,51 @@ FSA create_fsa(struct el**L1)
 }
 
 void compute_fsa(FSA fsa, struct el**L2){
-    /*Rodri passati pure LIST che è il puntatore alla testa della lista
-    così poi la puoi scandire col puntatore a LIST*/
+    int accetto, i, j;
+    char input[300];
+    state * finali;
+    el * header;
+    configuration attuale;
+
+    //preparo la stringa degli stati finali
+    finali = fsa.F;
+
+    //prendo configurazione iniziale uguale a q0
+    attuale.curr_q = fsa.q0;
+
+    //prendo la testa della lista di delta
+    header = fsa.delta;
+
+    accetto = 0;
+
+    //prendo input da verificare finchè la sua lunghezza non è maggiore di 0
+    do{
+        scanf("%s", input);
+        fflush(stdin);
+    } while(strlen(input) <= 0);
+
+    for(i = 0; input[i] != '\0' && accetto == 0; i++){
+        for(header; header != NULL && accetto == 0; header = header -> next){
+            //nel prossimo if vedo se lo stato tra l'attuale e quello del delta è lo stesso e se il carattere in input è lo stesso
+            if(attuale.curr_q == header -> config.curr_q && input[i] == header -> config.i){
+                //prendo il caso in cui sia l'ultimo elemento della stringa in ingresso
+                if(input[i + 1] == '\0'){
+                    //confronto lo stato finale dell'input con la stringa dgli stati finali permessi
+                    for(j = 0; finali[j] != '\0' && accetto == 0; j++){
+                        if(attuale.curr_q == finali[j]){
+                            accetto = 1;
+                        }
+                    }
+                } else{ //prendo il caso in cuin lo stato e input coincidano ma non è l'ultimo carattere dell'input
+                    attuale.curr_q = header -> final_q;
+                }
+            }
+        }
+    }
+
+    if(accetto == 1){
+        printf("La stringa è accettata!\n");
+    } else {
+        printf("La stringa non è accettata");
+    }
 }
