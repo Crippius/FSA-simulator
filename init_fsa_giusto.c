@@ -211,7 +211,7 @@ void compute_fsa(FSA fsa, struct el**L2){
                 //prendo il caso in cui sia l'ultimo elemento della stringa in ingresso
                 if(input[i + 1] == '\0'){
                     //confronto lo stato finale dell'input con la stringa dgli stati finali permessi
-                    for(j = 0; finali[j] != '\0' && accetto == 0; j++){
+                    for(j = 0; finali[j] != NULL && accetto == 0; j++){
                         if(attuale.curr_q == finali[j]){
                             accetto = 1;
                         }
