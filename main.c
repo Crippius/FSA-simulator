@@ -14,13 +14,11 @@ int main()
         do{
             scanf("%d", &decision);
         }while((decision != 1)&&(decision != 2)&&(decision != 3));
-        struct el*LIST;
-        
         if (decision == 1){
-            my_fsa = create_fsa(&LIST);
+            my_fsa = create_fsa();
         }
         else if (decision == 2)
-            compute_fsa(my_fsa, &LIST);
+            compute_fsa(my_fsa);
         else if (decision == 3)
             break;
     }

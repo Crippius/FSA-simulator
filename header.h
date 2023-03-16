@@ -7,13 +7,11 @@
 
 typedef char * state;
 typedef char * alphabet;
-typedef char * str;
 
 typedef struct 
 {
-    state curr_q;
+    state q;
     char  i;
-    str   z;
 } configuration;
 
 /*typedef struct
@@ -27,7 +25,7 @@ typedef struct
 typedef struct
 {
     configuration config;
-    str  output;
+    char *output;
 } translation;
 
 typedef translation* translations;
@@ -42,22 +40,25 @@ typedef struct
 {
     state* Q;
     alphabet  I;
-    int  delta;
+    struct el* delta;
     state  q0;
     state* F;
-    alphabet  O;
-    translations eta;
+    // alphabet  O; // work in progress
+    // translations eta;
 } FSA;
 
-state*       get_Q(void);
-alphabet     get_I(void);
-int          get_delta(struct el**L);
-state        get_q0(void);
-state*       get_F(void);
-alphabet     get_O(void);
-translations get_eta(void);
+state*       get_Q(int *err);
+alphabet     get_I(int *err);
+struct el*   get_delta(int *err, state *Q, alphabet I);
+state        get_q0(int *err, state *Q);
+state*       get_F(int *err, state *Q);
+alphabet     get_O(int *err);
+translations get_eta(int *err);
 
-FSA create_fsa(struct el**L1);
-void compute_fsa(FSA fsa, struct el**L2);
+FSA  create_fsa();
+void compute_fsa(FSA fsa);
+
+int char_is_in(char c, char *str);
+int str_is_in(char *str, char **arr);
 
 #endif

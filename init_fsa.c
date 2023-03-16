@@ -1,12 +1,16 @@
 
 #include "header.h"
 
-state* get_Q(void)
+state* get_Q(int *err)
 {
     state* Q;
     char   tmp[200];
     int    i;
     int    n;
+    int    prompt;
+
+    if (*err == 0)
+        return NULL;
 
     n = 0;
     while (n <= 0)
@@ -15,113 +19,162 @@ state* get_Q(void)
         scanf("%d", &n);
         fflush(stdin);
     }
+
     Q = (state*) malloc(sizeof(state) * (n + 1));
-    printf("Ora inserisci gli stati: ");
+        if (!Q) {
+        *err = 0;
+        printf("The Heap Area is full\n");
+        return NULL;
+    }
+    
+    for (i = 0; i < n + 1; i++)
+        Q[i] = NULL;
     for (i = 0; i < n; i++)
     {
-        scanf("%s", tmp);
+        prompt = 0;
+        printf("Stato %d: ", i+1);
+        do
+        {
+            if (prompt == 1)
+                printf("Inserire stato valido\n");
+            fflush(stdin);
+            scanf("%s", tmp);
+            prompt = 1;
+        } while (str_is_in(tmp, Q) != -1);
         Q[i] = strdup(tmp);
     }
     fflush(stdin);
-    Q[i] = NULL;
 
     return Q;
 }
 
-alphabet get_I(void)
+alphabet get_I(int *err)
 {
     char tmp[200];
     alphabet I;
+    int i, prompt = 0;
 
+    if (*err == 0)
+        return NULL;
+    
     printf("Ora inserisci l'alfabeto: ");
-    scanf("%s", tmp);
+    do {
+        if (prompt == 1)
+            printf("Inserire alfabeto valido\n");
+        prompt = 0;
+        fflush(stdin);
+        scanf("%s", tmp);
+        for (i = 0; tmp[i + 1] != '\0'; i++)
+            if (char_is_in(tmp[i], tmp+i+1) != -1)
+                prompt = 1;
+    } while (prompt == 1);
     I = strdup(tmp);
-    fflush(stdin);
 
     return I;
 } 
 
-int get_delta(struct el**L)  //la lista deve nascere qui, cioè dopo che hai preso stati e alfabeto ora qui crei una lista dinamica con tutte
+struct el* get_delta(int *err, state *Q, alphabet I)  //la lista deve nascere qui, cioè dopo che hai preso stati e alfabeto ora qui crei una lista dinamica con tutte
 {                            //le configurazioni che lui ti mette 
    struct el*last=NULL;
    struct el*element;
+   struct el*L;
    int dec;
    int count = 0;
    int alarm;
    char tmp[200];
    char c;
 
-   if(*L != NULL){
-    return 0;
-   }
+   if (*err == 0)
+       return NULL;
    printf("\nOra inserisci le triple STATO_INIZIALE-INPUT-STATO_FINALE\n1-continuare\n0-terminare\n");
-   do
-   {
+   do {
     scanf("%d", &dec);
    } while ((dec!=1)&&(dec!=0));
 
    while (dec==1){
-    element = (struct el*)malloc(sizeof(struct el));
-    if(element==NULL){
-        printf("\nThe Heap Area is full");
-        return 0;
+        element = (struct el*)malloc(sizeof(struct el));
+        if(element==NULL){
+            printf("The Heap Area is full\n");
+            *err = 0;
+            return NULL;
+        }
+        do {
+            fflush(stdin);
+            printf("Inserire STATO INIZIALE: ");
+            scanf("%s", tmp);
+        } while (str_is_in(tmp, Q) == -1);
+
+        element -> config.q = strdup(tmp);
+        do {
+            fflush(stdin);
+            printf("Inserire INPUT: ");
+            scanf("%c", &c);
+        } while (char_is_in(c, I) == -1);
+        element ->config.i = c;
+        do {
+            fflush(stdin);
+            printf("Inserire STATO FINALE: ");
+            scanf("%s", tmp);
+        } while (str_is_in(tmp, Q) == -1);
+        element->final_q = strdup(tmp);
+        element->next=NULL;
+        if (last==NULL){
+            L=element;
+            last=element;
+        }
+        else {
+            last->next=element;
+            last = element;
+        }
+        count ++;
+        printf("Premere:\n1 - CONTINUARE\n0 - TERMINARE\n");
+        do
+        {
+            scanf("%d", &dec);
+        } while ((dec!=1)&&(dec!=0));
+        if (dec==0)
+            return L;
     }
-    printf("\nInserire STATO %d: ",count);
-    gets(tmp); //qui bisognerebbe controllare che lo stato appartenga all'insieme degli stati messi prima
-    strcpy(element -> config.curr_q, tmp);
-    fflush(stdin);
-    printf("\nInserire INPUT: ");
-    scanf("%c", &c); //qui bisognerebbe controllare che l'input appartenga all'alfabeto messo prima
-    element ->config.i = c;
-    fflush(stdin);
-    printf("\nInserire STATO FINALE: ");
-    gets(tmp); //qui bisognerebbe controllare che lo stato appartenga all'insieme degli stati messi prima
-    strcpy(element->final_q, tmp);
-    element->next=NULL;
-    if (last==NULL){
-        *L=element;
-        last=element;
-    }
-    else {
-        last->next=element;
-        last = element;
-    }
-    count ++;
-    printf("\nPremere:\n1-CONTINUARE\n0-TERMINARE");
-    do
-    {
-        scanf("%d", &dec);
-    } while ((dec!=1)&&(dec!=0));
-    if (dec==0)
-        alarm = 1;
-   }
-   if(alarm==1)
-    return 1;
-   else
-    return 0;
+    *err = 0;
+    return NULL;
 }
 
 
-state get_q0(void)
+state get_q0(int *err, state *Q)
 {
     char  tmp[200];
     state q0;
+    int prompt = 0;
+    
+    if (*err == 0)
+        return NULL;
+    
 
     printf("Ora inserisci lo stato iniziale: ");
-    scanf("%s", tmp);
-    fflush(stdin);
+    do {
+        if (prompt == 1)
+            printf("Inserire stato iniziale valido\n");
+        prompt = 1;
+
+        fflush(stdin);
+        scanf("%s", tmp);
+    } while (str_is_in(tmp, Q) == -1);
+
     q0 = strdup(tmp);
 
     return q0;
 }
 
-state* get_F(void)
+state* get_F(int *err, state *Q)
 {
     state* F;
     char   tmp[200];
     int    i;
     int    n;
+    int    prompt;
 
+    if (*err == 0)
+        return NULL;
     n = 0;
     while (n <= 0)
     {
@@ -130,102 +183,82 @@ state* get_F(void)
         fflush(stdin);
     }
     F = (state*) malloc(sizeof(state) * (n + 1));
-    printf("Ora inserisci gli stati: ");
+    if (!F)
+    {
+        *err = 0;
+        return NULL;
+    }
+
+    for (i = 0; i < n + 1; i++)
+        F[i] = NULL;
     for (i = 0; i < n; i++)
     {
-        scanf("%s", tmp);
+        prompt = 0;
+        printf("Stato finale %d: ", i+1);
+        do {
+            if (prompt == 1)
+                printf("Inserire stato finale valido\n");
+            fflush(stdin);
+            scanf("%s", tmp);
+            prompt = 1;
+        } while (str_is_in(tmp, Q) == -1);
         F[i] = strdup(tmp);
     }
     fflush(stdin);
-    F[i] = NULL;
 
     return F;
 }
 
-alphabet get_O(void)
+alphabet get_O(int *err)
 {
     char     tmp[200];
     alphabet O;
+    int i, prompt = 0;
+
+    if (*err == 0)
+        return NULL;
 
     printf("Ora inserisci l'alfabeto di output: ");
-    scanf("%s", tmp);
+    do {
+        if (prompt == 1)
+            printf("Inserire alfabeto valido\n");
+        prompt = 0;
+        fflush(stdin);
+        scanf("%s", tmp);
+        for (i = 0; tmp[i + 1] != '\0'; i++)
+            if (char_is_in(tmp[i], tmp+i+1) != -1)
+                prompt = 1;
+    } while (prompt == 1);
     O = strdup(tmp);
-    fflush(stdin);
 
     return O;
 }
 
-translations get_eta(void)
+translations get_eta(int *err)
 {
     translations tmp = NULL;
 
+    if (*err == 0)
+        return NULL;
     // sike
     return tmp;
 
 }
 
-FSA create_fsa(struct el**L1)
+FSA create_fsa()
 {
     FSA fsa;
-    fsa.Q = get_Q();
-    fsa.I = get_I();
-    fsa.delta = get_delta(L1);
-    if(fsa.delta==0)
-        printf("\nPROBLEMI, PROBLEMI");     
-    fsa.q0 = get_q0();
-    fsa.F = get_F();
-    fsa.O = get_O();
-    fsa.eta = get_eta();
+    int err = 1;
 
+    fsa.Q = get_Q(&err);
+    fsa.I = get_I(&err);
+    fsa.delta = get_delta(&err, fsa.Q, fsa.I);
+    fsa.q0 = get_q0(&err, fsa.Q);
+    fsa.F = get_F(&err, fsa.Q);
+    // fsa.O = get_O(&err); // work in progress
+    // fsa.eta = get_eta(&errr);
+    if(err == 0)
+        printf("\nPROBLEMI, PROBLEMI\n"); 
     return fsa;
 }
 
-void compute_fsa(FSA fsa, struct el**L2){
-    int accetto, i, j;
-    char input[300];
-    state * finali;
-    el * header;
-    configuration attuale;
-
-    //preparo la stringa degli stati finali
-    finali = fsa.F;
-
-    //prendo configurazione iniziale uguale a q0
-    attuale.curr_q = fsa.q0;
-
-    //prendo la testa della lista di delta
-    header = *L2;
-
-    accetto = 0;
-
-    //prendo input da verificare finchè la sua lunghezza non è maggiore di 0
-    do{
-        scanf("%s", input);
-        fflush(stdin);
-    } while(strlen(input) <= 0);
-
-    for(i = 0; input[i] != '\0' && accetto == 0; i++){
-        for(header; header != NULL && accetto == 0; header = header -> next){
-            //nel prossimo if vedo se lo stato tra l'attuale e quello del delta è lo stesso e se il carattere in input è lo stesso
-            if(attuale.curr_q == header -> config.curr_q && input[i] == header -> config.i){
-                //prendo il caso in cui sia l'ultimo elemento della stringa in ingresso
-                if(input[i + 1] == '\0'){
-                    //confronto lo stato finale dell'input con la stringa dgli stati finali permessi
-                    for(j = 0; finali[j] != NULL && accetto == 0; j++){
-                        if(attuale.curr_q == finali[j]){
-                            accetto = 1;
-                        }
-                    }
-                } else{ //prendo il caso in cuin lo stato e input coincidano ma non è l'ultimo carattere dell'input
-                    attuale.curr_q = header -> final_q;
-                }
-            }
-        }
-    }
-
-    if(accetto == 1){
-        printf("La stringa è accettata!\n");
-    } else {
-        printf("La stringa non è accettata");
-    }
-}
