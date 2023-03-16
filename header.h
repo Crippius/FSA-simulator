@@ -12,6 +12,7 @@ typedef struct
 {
     state q;
     char  i;
+    char o;
 } configuration;
 
 /*typedef struct
@@ -22,13 +23,14 @@ typedef struct
 */
 // typedef move* moves;
 
-typedef struct
+/*typedef struct
 {
     configuration config;
     char *output;
 } translation;
 
 typedef translation* translations;
+*/
 
 struct el{
     configuration config;
@@ -43,8 +45,8 @@ typedef struct
     struct el* delta;
     state  q0;
     state* F;
-    // alphabet  O; // work in progress
-    // translations eta;
+    alphabet  O; 
+    //struct el* eta;
 } FSA;
 
 state*       get_Q(int *err);
@@ -53,10 +55,11 @@ struct el*   get_delta(int *err, state *Q, alphabet I);
 state        get_q0(int *err, state *Q);
 state*       get_F(int *err, state *Q);
 alphabet     get_O(int *err);
-translations get_eta(int *err);
+void         get_eta(int *err, struct el*header, alphabet O);
 
 FSA  create_fsa();
 void compute_fsa(FSA fsa);
+void translate_fsa(FSA fsa);
 
 int char_is_in(char c, char *str);
 int str_is_in(char *str, char **arr);

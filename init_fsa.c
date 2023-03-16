@@ -73,8 +73,10 @@ alphabet get_I(int *err)
     return I;
 } 
 
-struct el* get_delta(int *err, state *Q, alphabet I)  //la lista deve nascere qui, cioè dopo che hai preso stati e alfabeto ora qui crei una lista dinamica con tutte
-{                            //le configurazioni che lui ti mette 
+struct el* get_delta(int *err, state *Q, alphabet I)  
+
+/*creation of a dynamic list wehere each element contains config + final state*/
+{                            
    struct el*last=NULL;
    struct el*element;
    struct el*L;
@@ -234,18 +236,26 @@ alphabet get_O(int *err)
     return O;
 }
 
-translations get_eta(int *err)
+void get_eta(int *err, struct el*header, alphabet O)
 {
-    translations tmp = NULL;
+    char c;
 
     if (*err == 0)
         return NULL;
-    // sike
-    return tmp;
-
+    while (header!=NULL){
+        printf("\nStato: %s | Input: %c", header->config.q, header->config.i);
+        do{
+            fflush(stdin);
+            printf("\nInserire OUTPUT: ");
+            scanf("%c", &c);
+        }while (char_is_in(c, O) == -1);
+        header->config.o = c;
+        header = header->next;
+    }
+    return NULL;
 }
 
-FSA create_fsa()
+FSA create_fsa(int d)
 {
     FSA fsa;
     int err = 1;
@@ -255,8 +265,11 @@ FSA create_fsa()
     fsa.delta = get_delta(&err, fsa.Q, fsa.I);
     fsa.q0 = get_q0(&err, fsa.Q);
     fsa.F = get_F(&err, fsa.Q);
-    // fsa.O = get_O(&err); // work in progress
-    // fsa.eta = get_eta(&errr);
+    if(d==2){
+        fsa.O = get_O(&err); 
+        get_eta(&err, fsa.delta, fsa.O);
+    }
+    
     if(err == 0)
         printf("\nPROBLEMI, PROBLEMI\n"); 
     return fsa;
